@@ -33,3 +33,5 @@ comsumer-movie和provider-user 两者通过用户名和密码向discovery-eureka
 三 使用自定义属性配置
     在yml文件中 通过服务名称:ribbon :NFloadBalancerRuleClassName: 规则类
     -----------------------------
+    
+feign 在springBoot和springCloud在2.X之后feign就不支持了 被openfeign替代
