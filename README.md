@@ -12,6 +12,7 @@ comsumer-movie和provider-user 两者通过用户名和密码向discovery-eureka
 
 ----------------------------
 整合ribbon的方法
+一 单纯整合ribbon
 引入ribbon依赖
 <dependency>    
     <groupId>org.springframework.cloud</groupId>    
@@ -27,6 +28,6 @@ comsumer-movie和provider-user 两者通过用户名和密码向discovery-eureka
     public RestTemplate restTemplate(){
         return new RestTemplate();
     }
-    
-    
+二 使用Java代码自定义配置
+    自己定义一个ribbon的配置类，使用随机分配的原则进行访问
     -----------------------------
