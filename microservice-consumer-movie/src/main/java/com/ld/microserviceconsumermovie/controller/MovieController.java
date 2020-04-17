@@ -53,6 +53,7 @@ public class MovieController {
         return this.userOpenFeignClientCustom.findById(id);
     }
 
+
     /**
      * 通过自带ribbon进行负载均衡调用 我通过在idea中配置-Dserver-port=端口号启动了多个用户服务
      * 可以看到每次请求会请求不同的服务，通过log或者此方法都可以看到
