@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 /**
  * name 可以是任意的客户端名称
  */
-@FeignClient(name = "microservice-provider-user")
+//@FeignClient(name = "microservice-provider-user")
 public interface UserOpenFeignClient {
     @RequestMapping(value = "/user/index/{id}", method = RequestMethod.GET)
     public UserVo findById(@PathVariable Integer id);

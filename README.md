@@ -35,3 +35,6 @@ comsumer-movie和provider-user 两者通过用户名和密码向discovery-eureka
     -----------------------------
     
 feign 在springBoot和springCloud在2.X之后feign就不支持了 被openfeign替代
+
+springCloud 2.1.0以上的版本，不再默认支持FeignClient的name属性的相同名字
+即：多个接口上的FeignClient("相同服务名") 会报错 overriding is disabled(覆盖 是 禁止的/关闭的)。
