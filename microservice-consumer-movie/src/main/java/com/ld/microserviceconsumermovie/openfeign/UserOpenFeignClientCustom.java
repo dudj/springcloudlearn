@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 /**
  * feign自定义配置 使用@FeignClient的configuration属性，指定feign的配置类
  */
-@FeignClient(name = "microservice-provider-user", configuration = FeignConfiguration.class)
+//@FeignClient(name = "microservice-provider-user", configuration = FeignConfiguration.class)
 public interface UserOpenFeignClientCustom {
     /**
      * 使用feign自带的注解@RequestLine

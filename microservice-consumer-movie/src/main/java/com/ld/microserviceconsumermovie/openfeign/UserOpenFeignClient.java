@@ -12,5 +12,5 @@ import org.springframework.web.bind.annotation.RequestMethod;
 //@FeignClient(name = "microservice-provider-user")
 public interface UserOpenFeignClient {
     @RequestMapping(value = "/user/index/{id}", method = RequestMethod.GET)
-    public UserVo findById(@PathVariable Integer id);
+    public UserVo findById(@PathVariable("id") Integer id);
 }

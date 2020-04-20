@@ -1,12 +1,20 @@
 package com.ld.microserviceconsumermovie.controller;
 
-//import com.ld.microserviceconsumermovie.openfeign.UserOpenFeignClient;
-import com.ld.microserviceconsumermovie.openfeign.UserOpenFeignClientCustom;
+import com.ld.microserviceconsumermovie.openfeign.UserOpenFeignClient;
+//import com.ld.microserviceconsumermovie.openfeign.UserOpenFeignClientCustom;
 import com.ld.microserviceconsumermovie.vo.UserVo;
+import feign.Client;
+import feign.Contract;
+import feign.Feign;
+import feign.auth.BasicAuthRequestInterceptor;
+import feign.codec.Decoder;
+import feign.codec.Encoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
+import org.springframework.cloud.openfeign.FeignClientsConfiguration;
+import org.springframework.context.annotation.Import;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,15 +25,34 @@ import org.springframework.web.client.RestTemplate;
 @RestController
 @RequestMapping("/movie")
 @Slf4j
+//springCloud 为Feign默认提供的配置类
+@Import(FeignClientsConfiguration.class)
 public class MovieController {
     @Autowired
     private RestTemplate restTemplate;
     @Autowired
     private LoadBalancerClient loadBalancerClient;
+    private UserOpenFeignClient userOpenFeignClient;
+    private UserOpenFeignClient adminOpenFeignClient;
 //    @Autowired
-//    private UserOpenFeignClient userOpenFeignClient;
-    @Autowired
-    private UserOpenFeignClientCustom userOpenFeignClientCustom;
+//    private UserOpenFeignClientCustom userOpenFeignClientCustom;
+    public MovieController(Decoder decoder, Encoder encoder, Client client, Contract contract){
+        this.userOpenFeignClient = Feign.builder().client(client).encoder(encoder).decoder(decoder).contract(contract)
+                .requestInterceptor(new BasicAuthRequestInterceptor("user","123456")).target(UserOpenFeignClient.class,"http://microservice-provider-user/");
+
+        this.adminOpenFeignClient = Feign.builder().client(client).encoder(encoder).decoder(decoder).contract(contract)
+                .requestInterceptor(new BasicAuthRequestInterceptor("admin","123456")).target(UserOpenFeignClient.class,"http://microservice-provider-user/");
+    }
+
+    @GetMapping("/user-user/{id}")
+    public UserVo findByIdUser(@PathVariable Integer id){
+        return this.userOpenFeignClient.findById(id);
+    }
+    @GetMapping("/user-admin/{id}")
+    public UserVo findByIdAdmin(@PathVariable Integer id){
+        return this.adminOpenFeignClient.findById(id);
+    }
+
     @GetMapping("/index/{id}")
     public UserVo index(@PathVariable Integer id){
         return this.restTemplate.getForObject("http://microservice-provider-user/user/index/" + id, UserVo.class);
@@ -47,11 +74,11 @@ public class MovieController {
      * @param id 用户id
      * @return 用户信息
      */
-    @GetMapping("/index-open-feign-custom/{id}")
-    public UserVo indexOpenFeignCustom(@PathVariable Integer id){
-        log.info("openfeign 自定义---实现应用之间的通信，获取id为{}的信息",id);
-        return this.userOpenFeignClientCustom.findById(id);
-    }
+//    @GetMapping("/index-open-feign-custom/{id}")
+//    public UserVo indexOpenFeignCustom(@PathVariable Integer id){
+//        log.info("openfeign 自定义---实现应用之间的通信，获取id为{}的信息",id);
+//        return this.userOpenFeignClientCustom.findById(id);
+//    }
 
 
     /**

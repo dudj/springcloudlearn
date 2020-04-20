@@ -8,7 +8,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication
 @EnableDiscoveryClient
 //加入openfeign的注解
-@EnableFeignClients
+//@EnableFeignClients
 public class ConsumerMovieApplication {
 
     public static void main(String[] args) {
