@@ -2,6 +2,7 @@ package com.ld.microserviceconsumermovie.controller;
 
 import com.ld.microserviceconsumermovie.openfeign.UserOpenFeignClient;
 //import com.ld.microserviceconsumermovie.openfeign.UserOpenFeignClientCustom;
+import com.ld.microserviceconsumermovie.openfeign.UserOpenFeignClientCustom;
 import com.ld.microserviceconsumermovie.vo.UserVo;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
@@ -35,17 +36,17 @@ public class MovieController {
     @Autowired
     private LoadBalancerClient loadBalancerClient;
     @Autowired
-    private UserOpenFeignClient userOpenFeignClientLoad;
-    private UserOpenFeignClient userOpenFeignClient;
-    private UserOpenFeignClient adminOpenFeignClient;
+    private UserOpenFeignClient userOpenFeignClientNosecurity;
+    private UserOpenFeignClientCustom userOpenFeignClient;
+    private UserOpenFeignClientCustom adminOpenFeignClient;
 //    @Autowired
 //    private UserOpenFeignClientCustom userOpenFeignClientCustom;
     public MovieController(Decoder decoder, Encoder encoder, Client client, Contract contract){
         this.userOpenFeignClient = Feign.builder().client(client).encoder(encoder).decoder(decoder).contract(contract)
-                .requestInterceptor(new BasicAuthRequestInterceptor("user","123456")).target(UserOpenFeignClient.class,"http://microservice-provider-user/");
+                .requestInterceptor(new BasicAuthRequestInterceptor("user","123456")).target(UserOpenFeignClientCustom.class,"http://microservice-provider-user/");
 
         this.adminOpenFeignClient = Feign.builder().client(client).encoder(encoder).decoder(decoder).contract(contract)
-                .requestInterceptor(new BasicAuthRequestInterceptor("admin","123456")).target(UserOpenFeignClient.class,"http://microservice-provider-user/");
+                .requestInterceptor(new BasicAuthRequestInterceptor("admin","123456")).target(UserOpenFeignClientCustom.class,"http://microservice-provider-user/");
     }
     //以下配置是在本项目上请求的方法 出现问题熔断
     /*@HystrixCommand(fallbackMethod = "findByIdUserFallback", commandProperties = {
@@ -57,7 +58,7 @@ public class MovieController {
     })*/
     @GetMapping("/user-user/{id}")
     public UserVo findByIdUser(@PathVariable Integer id){
-        return this.userOpenFeignClientLoad.findById(id);
+        return this.userOpenFeignClientNosecurity.findById(id);
     }
 
     public UserVo findByIdUserFallback(@PathVariable Integer id){
