@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: mmicroservice-hystrix-dashboard
+server:
+  port: 8085
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://user:password123@localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    # 配置eureka注册显示的状态 默认为主机名:服务名:端口 可以通过instance-id
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
