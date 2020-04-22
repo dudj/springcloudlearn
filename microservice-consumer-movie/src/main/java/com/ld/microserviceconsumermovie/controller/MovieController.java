@@ -3,6 +3,8 @@ package com.ld.microserviceconsumermovie.controller;
 import com.ld.microserviceconsumermovie.openfeign.UserOpenFeignClient;
 //import com.ld.microserviceconsumermovie.openfeign.UserOpenFeignClientCustom;
 import com.ld.microserviceconsumermovie.vo.UserVo;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import feign.Client;
 import feign.Contract;
 import feign.Feign;
@@ -32,6 +34,8 @@ public class MovieController {
     private RestTemplate restTemplate;
     @Autowired
     private LoadBalancerClient loadBalancerClient;
+    @Autowired
+    private UserOpenFeignClient userOpenFeignClientLoad;
     private UserOpenFeignClient userOpenFeignClient;
     private UserOpenFeignClient adminOpenFeignClient;
 //    @Autowired
@@ -43,11 +47,27 @@ public class MovieController {
         this.adminOpenFeignClient = Feign.builder().client(client).encoder(encoder).decoder(decoder).contract(contract)
                 .requestInterceptor(new BasicAuthRequestInterceptor("admin","123456")).target(UserOpenFeignClient.class,"http://microservice-provider-user/");
     }
-
+    //以下配置是在本项目上请求的方法 出现问题熔断
+    /*@HystrixCommand(fallbackMethod = "findByIdUserFallback", commandProperties = {
+        @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "5000"),
+        @HystrixProperty(name = "metrics.rollingStats.timeInMilliseconds", value = "10000")
+    },threadPoolProperties = {
+            @HystrixProperty(name = "coreSize", value = "1"),
+            @HystrixProperty(name = "maxQueueSize", value = "10")
+    })*/
     @GetMapping("/user-user/{id}")
     public UserVo findByIdUser(@PathVariable Integer id){
-        return this.userOpenFeignClient.findById(id);
+        return this.userOpenFeignClientLoad.findById(id);
     }
+
+    public UserVo findByIdUserFallback(@PathVariable Integer id){
+        UserVo userVo = new UserVo();
+        userVo.setAge(10);
+        userVo.setId(-1);
+        userVo.setName("默认用户");
+        return userVo;
+    }
+
     @GetMapping("/user-admin/{id}")
     public UserVo findByIdAdmin(@PathVariable Integer id){
         return this.adminOpenFeignClient.findById(id);
